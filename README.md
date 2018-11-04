@@ -32,6 +32,8 @@ The oracle allows the user send UCASH directly to the uCollateral contract witho
 
 - deploy your own instance of UCOLLATERAL.sol
 
+- modify the contract address in contractInit.js and oracle.js
+
 ```python -m SimpleHTTPServer 8080```
 
 to serve ucollateral.html
