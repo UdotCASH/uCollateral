@@ -16,6 +16,7 @@ Periodically, the liquidity bounty pool (not user input funds), will be adjusted
 - clone the repository
 
 ```python -m SimpleHTTPServer 8080```
+
 to serve uCollateral.html
 
 - or simply go to https://udotcash.github.io/uCollateral/uCollateral.html. 
@@ -32,11 +33,13 @@ The oracle allows the user send UCASH directly to the uCollateral contract witho
 - deploy your own instance of UCOLLATERAL.sol
 
 ```python -m SimpleHTTPServer 8080```
+
 to serve ucollateral.html
 
 - import your private key into oracle.js
 
 ```node oracle.js```
+
 to run the oracle
 
 ---------------------------------------------------------------------------
