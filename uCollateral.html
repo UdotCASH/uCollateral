@@ -1,166 +1,111 @@
 <html>
-<body>
-  <script src="https://cdn.ethers.io/scripts/ethers-v4.min.js">
-  </script>
-
-
-  <script src="../uCollateral/js/switchMetamask.js">
-  </script>
-  <script src="../uCollateral/js/contractInit.js">
-  </script>
-  <script src="../uCollateral/js/contractFunctions.js">
-  </script>
-
-
-
-<script>
-var provider = new ethers.providers.Web3Provider(web3.currentProvider,'rinkeby');
-
-var _ethers = ethers;
-provider.listAccounts().then(function(accounts) {
-  initialize(_ethers, accounts);
-});
-
- </script>
-
-
-
-  <script charset="utf-8"
-          src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"
-          type="text/javascript">
-          //MODULES:
-          //All
-            //LoanCalculator
-            //ContractInfo
-            //AddressAndBalance
-            //LoanInfo
-
-          //No Metamask
-            //WatchAddress
-
-          //Metamask Logged in
-            //SendUCASH
-            //ReclaimButton
-            //ApproveAndTransfer
-
-          //metamaskLoggedOut
-            //connectToMetamask
-
-            //Split into 3 divs
-            //show/hide divs based on metamask status
-            // put code into js files
-            //test
-            //push to github
-  </script>
-
-  <script>
-            var counter = 0;
-            window.setInterval("refreshDiv()", 2000);
-            function refreshDiv(){
-                updateDapp();
-              }
-  </script>
-
-
-
-<div id="metamaskLoggedOut">
-  <label id="connectToMetamask"></label>
-
-</div>
-
-<div id="ALL">
-  <label><B>Collateral Bounty Calulator</b></label><br>
-  <label>Amount of UCASH to contribute now</label> <input type="number" id="calculateAmountInput"> </input> <br>
-  <label id="UCASHtoReceive">Input amount of UCASH to contribute to get a bounty quote.</label><br>
-  <button onclick="Calculate()">Calculate</button><br>
-  <hr>
-
-  <button id="GetUCASH" onclick="dispenseUCASH()">Get Testnet ETH</button>
-  <button id="GetUCASH" onclick="dispenseUCASH()">Get Testnet UCASH</button><br>
-  <label>Make sure you are logged into Metamask and are on Rinkeby Testnet.  Only available once every 24 hours.</label><br><br>
-
-  <label id="ContractAddressLabel" font size="18"></label><br>
-  <label>Send 0.0011 UCASH, or 110000 wei to the contract address to reclaim early or when bounty period complete.</label><br><br>
-  <img id="x" src="Ethereum_QR_code.png"height="164"><br><br>
-
-
-  <label id="YourAddress"></label><br>
-  <label id="OwnedUCASH"></label><br>
-  <hr>
-
-
-
-
-
-  <label id="amountDeposited"></label><br>
-  <label id="totalReward"></label><br>
-  <label id="ifClaimedNow"></label><br>
-  <label id="TimeLeft"></label><br>
-  <label id="lateBy"></label><br>
-  <hr>
-
-  <div id="noMetamask">
-      <input type="text" id="AddressToWatch">Address To Watch</input><br>
-      <button onclick="contribute()" id="contributeButton">Watch Address</button><br><br>
-  </div>
-
-  <div id="metamaskLoggedIn">
-    <input type="number" id="AmountofUCASH">Amount of UCASH</input><br>
-    <button onclick="approve()">Send to uCollateral Contract (Step 1: Approve)</button>
-    <label id="approvedAmount"></label><br>
-    <button onclick="metamaskContribute()">Send to uCollateral Contract (Step 2: Contribute)</button><br><br>
-    <input type="number" id="AmountofUCASH2">Amount of UCASH</input><br>
-    <button onclick="contribute()" id="contributeButton">Send to uCollateral Contract (1 Transaction: Contribute with Oracle)</button><br>
-    <hr>
-    <button onclick="reclaim()" id="ReclaimButton">Reclaim</button><br>
-    <button onclick="recirculateLateFees()" id="recirculateLateFees">Recirculate Late Fees</button><br>
-  </div>
-
-  <hr>
-  <label id="BountyPool"></label><br>
-  <label id="ContractBalance"></label><br>
-  <label id="TotalUCASHAllocated"></label><br>
-  <label id ="TotalifClaimedNow"></label><br>
-</div>
-
-
-
-
-
-  <script>
-
-  </script>
-
-
-
-<script  >
-
-
-function updateDapp(){
-  provider.listAccounts().then(function(accounts) {
-      signer = provider.getSigner(accounts[0]);
-      var _address;
-
-      switchProvider(accounts,web3.currentProvider);
-
-      if(signer._address>0){
-        _address = signer._address;
-        ucashContract = new ethers.Contract(ucashContractAddress, ucashABI, signer);
-        uCollateralContract = new ethers.Contract(uCollateralContractAddress,uCollateralABI,signer);
-      }else{
-        _address = document.getElementById("AddressToWatch").value;
-        ucashContract = new ethers.Contract(ucashContractAddress, ucashABI, provider);
-        uCollateralContract = new ethers.Contract(uCollateralContractAddress,uCollateralABI,provider);
-      };
-      document.getElementById("YourAddress").innerHTML = "<span><B>Your Address: </b><a href='https://rinkeby.etherscan.io/address/"+_address+"'>" +_address+ "</a></span>";
-
-      getOwnedUCASH(_address);
-      updateLoanInfo(_address);
-      updateContractInfo(_address);
-
-    });
-}
-</script>
-
-</body>
+    <body>
+    <script src="https://cdn.ethers.io/scripts/ethers-v4.min.js"></script>
+    <script src="../uCollateral/js/switchMetamask.js"></script>
+    <script src="../uCollateral/js/contractInit.js"></script>
+    <script src="../uCollateral/js/contractFunctions.js"></script>
+    <script>
+        var provider = new ethers.providers.Web3Provider(web3.currentProvider,'rinkeby');
+        var _ethers = ethers;
+        provider.listAccounts().then(function(accounts) {
+        initialize(_ethers, accounts);
+        });
+    </script>
+    <script charset="utf-8" src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js" type="text/javascript">
+        //MODULES:
+        //All
+        //LoanCalculator
+        //ContractInfo
+        //AddressAndBalance
+        //LoanInfo
+        //No Metamask
+        //WatchAddress
+        //Metamask Logged in
+        //SendUCASH
+        //ReclaimButton
+        //ApproveAndTransfer
+        //metamaskLoggedOut
+        //connectToMetamask
+        //Split into 3 divs
+        //show/hide divs based on metamask status
+        // put code into js files
+        //test
+        //push to github
+    </script>
+    <script>
+        var counter = 0;
+        window.setInterval("refreshDiv()", 2000);
+        function refreshDiv(){
+            updateDapp();
+        }
+    </script>
+    <div id="metamaskLoggedOut">
+        <label id="connectToMetamask"></label>
+    </div>
+    <div id="ALL">
+        <label><B>Collateral Bounty Calulator</b></label><br>
+        <label>Amount of UCASH to contribute now</label>
+        <input type="number" id="calculateAmountInput"></input><br>
+        <label id="UCASHtoReceive">Input amount of UCASH to contribute to get a bounty quote.</label><br>
+        <button onclick="Calculate()">Calculate</button><br>
+        <hr>
+        <button id="GetUCASH" onclick="dispenseUCASH()">Get Testnet ETH</button>
+        <button id="GetUCASH" onclick="dispenseUCASH()">Get Testnet UCASH</button><br>
+        <label>Make sure you are logged into Metamask and are on Rinkeby Testnet.  Only available once every 24 hours.</label><br><br>
+        <label id="ContractAddressLabel" font size="18"></label><br>
+        <label>Send 0.0011 UCASH, or 110000 wei to the contract address to reclaim early or when bounty period complete.</label><br><br>
+        <img id="x" src="Ethereum_QR_code.png"height="164"><br><br>
+        <label id="YourAddress"></label><br>
+        <label id="OwnedUCASH"></label><br>
+        <hr>
+        <label id="amountDeposited"></label><br>
+        <label id="totalReward"></label><br>
+        <label id="ifClaimedNow"></label><br>
+        <label id="TimeLeft"></label><br>
+        <label id="lateBy"></label><br>
+        <hr>
+        <div id="noMetamask">
+            <input type="text" id="AddressToWatch">Address To Watch</input><br>
+            <button onclick="contribute()" id="contributeButton">Watch Address</button><br><br>
+        </div>
+        <div id="metamaskLoggedIn">
+            <input type="number" id="AmountofUCASH">Amount of UCASH</input><br>
+            <button onclick="approve()">Send to uCollateral Contract (Step 1: Approve)</button>
+            <label id="approvedAmount"></label><br>
+            <button onclick="metamaskContribute()">Send to uCollateral Contract (Step 2: Contribute)</button><br><br>
+            <input type="number" id="AmountofUCASH2">Amount of UCASH</input><br>
+            <button onclick="contribute()" id="contributeButton">Send to uCollateral Contract (1 Transaction: Contribute with Oracle)</button><br>
+            <hr>
+            <button onclick="reclaim()" id="ReclaimButton">Reclaim</button><br>
+            <button onclick="recirculateLateFees()" id="recirculateLateFees">Recirculate Late Fees</button><br>
+        </div>
+        <hr>
+        <label id="BountyPool"></label><br>
+        <label id="ContractBalance"></label><br>
+        <label id="TotalUCASHAllocated"></label><br>
+        <label id ="TotalifClaimedNow"></label><br>
+    </div>
+    <script>
+        function updateDapp(){
+            provider.listAccounts().then(function(accounts) {
+                signer = provider.getSigner(accounts[0]);
+                var _address;
+                switchProvider(accounts,web3.currentProvider);
+                if(signer._address>0){
+                    _address = signer._address;
+                    ucashContract = new ethers.Contract(ucashContractAddress, ucashABI, signer);
+                    uCollateralContract = new ethers.Contract(uCollateralContractAddress,uCollateralABI,signer);
+                }else{
+                    _address = document.getElementById("AddressToWatch").value;
+                    ucashContract = new ethers.Contract(ucashContractAddress, ucashABI, provider);
+                    uCollateralContract = new ethers.Contract(uCollateralContractAddress,uCollateralABI,provider);
+                };
+                document.getElementById("YourAddress").innerHTML = "<span><B>Your Address: </b><a href='https://rinkeby.etherscan.io/address/"+_address+"'>" +_address+ "</a></span>";
+                getOwnedUCASH(_address);
+                updateLoanInfo(_address);
+                updateContractInfo(_address);
+            });
+        }
+    </script>
+    </body>
 </html>
