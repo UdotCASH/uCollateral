@@ -45,7 +45,7 @@
         <div id="ALL">
             <label><B>Collateral Bounty Calulator</b></label><br>
             <label>Amount of UCASH to contribute now</label>
-            <input type="number" id="calculateAmountInput"/><br>
+            <input type="number" id="calculateAmountInput" placeholder="How much UCASH you want to input"/><br>
             <label id="UCASHtoReceive">Input amount of UCASH to contribute to get a bounty quote.</label><br>
             <button onclick="Calculate()">Calculate</button><br>
             <hr>
@@ -69,11 +69,11 @@
                 <button onclick="contribute()" id="contributeButton">Watch Address</button><br><br>
             </div>
             <div id="metamaskLoggedIn">
-                <input type="number" id="AmountofUCASH" value="Amount of UCASH"/><br>
+                <input type="number" id="AmountofUCASH" placeholder="Amount of UCASH"/><br>
                 <button onclick="approve()">Send to uCollateral Contract (Step 1: Approve)</button>
                 <label id="approvedAmount"></label><br>
                 <button onclick="metamaskContribute()">Send to uCollateral Contract (Step 2: Contribute)</button><br><br>
-                <input type="number" id="AmountofUCASH2" value="Amount of UCASH"/><br>
+                <input type="number" id="AmountofUCASH2" placeholder="Amount of UCASH"/><br>
                 <button onclick="contribute()" id="contributeButton">Send to uCollateral Contract (1 Transaction: Contribute with Oracle)</button><br>
                 <hr>
                 <button onclick="reclaim()" id="ReclaimButton">Reclaim</button><br>
