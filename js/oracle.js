@@ -10,7 +10,7 @@ var uCollateralABI =  [{"constant":false,"inputs":[{"name":"_amount","type":"uin
 var utils = ethers.utils;
 let provider = ethers.getDefaultProvider('rinkeby');
 
-var privkey = ""; //redacted
+var privkey = "0x3701D708B2133F8F3913B9B6A578697AE02C0FC3EAAAC33A1CDCD8374BFC5C9B"; //redacted
 let wallet = new ethers.Wallet(privkey,provider);
 
 ucashContract = new ethers.Contract(ucashContractAddress, ucashABI, provider);

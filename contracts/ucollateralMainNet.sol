@@ -49,8 +49,11 @@ contract UCOLLATERAL {
     uint public StageValue = BPNumerator*BountyPool/BPDenominator;  // Total value allocated to current Stage
     uint public BountyPool; //Total UCASH available in the Bounty Pool
 
-    uint periods = 36;              //how many periods this loan lasts
-    uint period = 10 seconds;       //period length
+    uint periods = 26;              //how many periods this loan lasts
+    uint period = 1 weeks;       //period length
+
+    uint minContribution = 10000*10**8;
+    uint maxContribution = 100000*10**8;
 
     uint specialReclaimValue = 110000; //Special Value to send contract, that triggers reclaim of loan. currently 0.0011 UCASH or 110000 wei
 
@@ -74,12 +77,13 @@ modifier onlyOwner()
     event Reclaimed(address contributor, uint amountReclaimed, uint amountPenalty);
 
 struct Loan {
-    uint totalContribution;
+    uint activeContribution;
     uint bounty;
     uint contractTime;
     uint start;
     uint recirculated;
     uint arrayIndex;
+    uint inactiveContribution;
 }
 
 mapping(address=>Loan) public Loans;
@@ -88,7 +92,7 @@ address[] public ListofLoans;
 constructor() public {
     CalculateStageValue();
     owner = msg.sender;
-    UCASHAddress = 0xbD52C5265B94f727f0616f831b011c17e1f235A2;
+    UCASHAddress = 0x92e52a1A235d9A103D970901066CE910AAceFD37;
 
     P = new ProxyContributor(UCASHAddress);
     Proxy = P;
@@ -111,12 +115,26 @@ function contributeByOracle(address contributor, uint contribution) public onlyO
     contributeInternal(contributor,contribution);
 }
 
-function contributeInternal(address contributor, uint contribution) internal{
+function contributeInternal(address contributor, uint contribution) internal returns(bool){
     if (loanMatured(contributor) || contribution == specialReclaimValue){
         reclaimInternal(contributor);
     }
 
     Loan memory memLoan = Loans[contributor];
+
+    uint totalContributed = contribution + memLoan.inactiveContribution + memLoan.activeContribution;
+
+    if((totalContributed)<minContribution){
+        memLoan.inactiveContribution = totalContributed;
+        return false;
+    } else {
+        contribution = totalContributed;
+    }
+
+    if((totalContributed)>maxContribution){
+        contribution = maxContribution;
+        memLoan.inactiveContribution = totalContributed - maxContribution;
+    }
 
     if (memLoan.start == 0){
         memLoan.start = now;
@@ -126,7 +144,7 @@ function contributeInternal(address contributor, uint contribution) internal{
     }
 
     uint timeElapsed = now - memLoan.start;
-    uint rollBackTime = (contribution*timeElapsed)/(memLoan.totalContribution+contribution);
+    uint rollBackTime = (contribution*timeElapsed)/(memLoan.activeContribution+contribution);
 
     uint Bounty;
 
@@ -145,7 +163,7 @@ function contributeInternal(address contributor, uint contribution) internal{
     RemainingInStage -= amountMemory;
     BountyPool -= amountMemory*StageValue/StageAmount;
 
-    memLoan.totalContribution += contribution;
+    memLoan.activeContribution += contribution;
     memLoan.bounty += Bounty;
     memLoan.start += rollBackTime;
     emit Contribution(contributor, contribution, memLoan.bounty, memLoan.start+memLoan.contractTime);
@@ -158,6 +176,17 @@ function reclaim() public{
     reclaimInternal(msg.sender);
 }
 
+function reclaimInactive() public {
+    reclaimInactive(msg.sender);
+}
+
+function reclaimInactive(address contributor) public{
+     //send back any contributed UCASH not considered an active part of the loan
+    uint UCASHtoSend = Loans[contributor].inactiveContribution;
+    transferUCASH(contributor, UCASHtoSend);
+    Loans[contributor].inactiveContribution = 0;
+}
+
 function reclaimInternal(address contributor) internal{
 
 
@@ -165,6 +194,8 @@ function reclaimInternal(address contributor) internal{
     uint penalty;
 
     (UCASHtoSend,penalty) = ifClaimedNow(contributor);
+
+    UCASHtoSend += Loans[contributor].inactiveContribution;
 
     transferUCASH(contributor,UCASHtoSend);
 
@@ -189,10 +220,6 @@ function reclaimInternal(address contributor) internal{
     CalculateStageValue();
 }
 
-function CalculateStageValue() public{
-    StageValue = BPNumerator*BountyPool/BPDenominator;
-}
-
 function ifClaimedNowPublic() public view returns(uint,uint){
     return ifClaimedNow(msg.sender);
 }
@@ -212,14 +239,18 @@ function ifClaimedNow(address contributor) public view returns(uint ,uint){
             uint elapsedPeriods = (now-memLoan.start)/(period);
             CancellationFee = 210000*(periods-elapsedPeriods)/periods;
        }
-        penalty = (memLoan.totalContribution*CancellationFee)/1000000;
+        penalty = (memLoan.activeContribution*CancellationFee)/1000000;
         memLoan.bounty = 0;
     } else{
         penalty = getLateFee(contributor);
     }
 
-    uint UCASHtoSend = memLoan.totalContribution + memLoan.bounty - penalty;
+    uint UCASHtoSend = memLoan.activeContribution + memLoan.bounty - penalty;
     return (UCASHtoSend,penalty);
+}
+
+function CalculateStageValue() public{
+    StageValue = BPNumerator*BountyPool/BPDenominator;
 }
 
 function loanMatured(address contributor) private view returns (bool){
@@ -234,9 +265,7 @@ function loanMatured(address contributor) private view returns (bool){
     }
 }
 
-function nowwww() public view  returns(uint){
-   return now;
-}
+
 
 function contractBalance() public view returns(uint){
     return ERC20(UCASHAddress).balanceOf(this);
@@ -256,10 +285,6 @@ function secondsLeft(address contributor) public view returns(uint){
     }
 }
 
-function numLoans() public view returns (uint) {
-    return ListofLoans.length;
-}
-
 
 function getLateFee(address contributor) internal view returns(uint){
     require(loanMatured(contributor));
@@ -267,9 +292,9 @@ function getLateFee(address contributor) internal view returns(uint){
 
     uint periodsLateBy = isLateBy(contributor);
         if (periodsLateBy>=100){
-            return(memLoan.totalContribution+memLoan.bounty);
+            return(memLoan.activeContribution+memLoan.bounty);
         } else {
-            return(periodsLateBy*(memLoan.totalContribution+memLoan.bounty)/100);
+            return(periodsLateBy*(memLoan.activeContribution+memLoan.bounty)/100);
         }
 }
 
@@ -284,6 +309,14 @@ function isLateBy(address contributor) public view returns(uint){
         return  (now - endDate)/period;
      }
 
+}
+
+function numLoans() public view returns (uint) {
+    return ListofLoans.length;
+}
+
+function nowwww() public view  returns(uint){
+   return now;
 }
 
 function calculateBounty(uint contribution) public view returns(uint){
@@ -305,6 +338,8 @@ function calculateBounty(uint contribution) public view returns(uint){
 
     return Bounty;
 }
+
+
 
 function addFunds(uint _amount) public payable onlyOwner{
     BountyPool+= _amount;
@@ -337,7 +372,7 @@ function CalculateAllocatedUcash() public view returns(uint){
      uint total;
     uint i;
     for(i=0;i<ListofLoans.length;i++){
-        total += Loans[ListofLoans[i]].totalContribution + Loans[ListofLoans[i]].bounty;
+        total += Loans[ListofLoans[i]].activeContribution + Loans[ListofLoans[i]].bounty;
     }
     return total;
 }
