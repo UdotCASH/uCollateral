@@ -100,7 +100,7 @@
                         ucashContract = new ethers.Contract(ucashContractAddress, ucashABI, provider);
                         uCollateralContract = new ethers.Contract(uCollateralContractAddress,uCollateralABI,provider);
                     };
-                    document.getElementById("YourAddress").innerHTML = "<span><B>Your Address: </b><a href='https://rinkeby.etherscan.io/address/"+_address+"'>" +_address+ "</a></span>";
+                    document.getElementById("YourAddress").innerHTML = "<span><B>Your Address: </b><a href='https://rinkeby.etherscan.io/address/"+_address+"' target="_blank">" +_address+ "</a></span>";
                     getOwnedUCASH(_address);
                     updateLoanInfo(_address);
                     updateContractInfo(_address);
