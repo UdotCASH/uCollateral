@@ -49,7 +49,7 @@ function initialize(_ethers, accounts){
 
 
 
-  document.getElementById("ContractAddressLabel").innerHTML = "<span><B>Contract Address: </b><a target="_blank" href='https://rinkeby.etherscan.io/address/"+uCollateralContractAddress+"'>" +uCollateralContractAddress+ "</a></span>";
+  document.getElementById("ContractAddressLabel").innerHTML = "<span><B>Contract Address: </b><a href='https://rinkeby.etherscan.io/address/"+uCollateralContractAddress+"'>" +uCollateralContractAddress+ "</a></span>";
 
 console.log(ucashContract);
 
