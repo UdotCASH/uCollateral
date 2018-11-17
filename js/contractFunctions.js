@@ -36,9 +36,20 @@ function getOwnedUCASH(_address){
   })
 }
 
-function reclaim(){
-  reclaimPromise = uCollateralContract.reclaim();
-  reclaimPromise.then();
+async function reclaim(){
+  // First 4 bytes of the hash of "fee()" for the sighash selector
+  let data = ethers.utils.hexDataSlice(ethers.utils.id('reclaim()'), 0, 4);
+
+  let transaction = {
+      to: uCollateralContractAddress,
+      data: data,
+      gasLimit: _ethers.utils.bigNumberify("500000"),
+      data: data
+  }
+
+  await signer.sendTransaction(transaction);
+
+
 
 }
 
@@ -46,10 +57,10 @@ function updateLoanInfo(_address){
   getLoanInfoPromise = uCollateralContract.Loans(_address);
   getLoanInfoPromise.then(function(result){
 
-    result0 = result['totalContribution']/(10**8); //Loans.initialAmount
-    result1 = result0 + result['bounty']/(10**8); //Loans.value
-    document.getElementById("amountDeposited").innerHTML = "<B>Amount Deposited: </B>" + result0.toLocaleString('en', { maximumFractionDigits: 8 }) + " UCASH";
-    document.getElementById("totalReward").innerHTML = "<B>You will receive a total of: </B>" + result1.toLocaleString('en', { maximumFractionDigits: 8 }) + " after waiting 6 minutes";
+    amountDeposited = result['totalContribution']/(10**8); //Loans.initialAmount
+    totalReward = amountDeposited + result['bounty']/(10**8); //Loans.value
+    document.getElementById("amountDeposited").innerHTML = "<B>Amount Deposited: </B>" + amountDeposited.toLocaleString('en', { maximumFractionDigits: 8 }) + " UCASH";
+    document.getElementById("totalReward").innerHTML = "<B>You will receive a total of: </B>" + totalReward.toLocaleString('en', { maximumFractionDigits: 8 }) + " after waiting 6 minutes";
   });
 
   ifClaimedNowPromise = uCollateralContract.ifClaimedNow(_address);
@@ -60,14 +71,15 @@ function updateLoanInfo(_address){
       document.getElementById("ifClaimedNow").innerHTML = "<B>You can get: </B>" + claimable.toLocaleString('en', { maximumFractionDigits: 8 }) + " UCASH if you claim right now with a penalty of " + penalty.toLocaleString('en', { maximumFractionDigits: 8 }) + " UCASH";
   });
 
+
   getTimeLeftPromise = uCollateralContract.secondsLeft(_address);
   getTimeLeftPromise.then(function(result){
-      document.getElementById("TimeLeft").innerHTML = "<B>Time Left: </B>" +  result + " seconds";
+      document.getElementById("timeLeft").innerHTML = "<B>Time Left: </B>" +  result + " seconds";
   });
 
   getLateByPromise = uCollateralContract.isLateBy(_address);
   getLateByPromise.then(function(result){
-    document.getElementById("lateBy").innerHTML = "<B>Late By: </B>" + result + " periods. You will be charged a fee of 1% per period.";
+    document.getElementById("lateBy").innerHTML = "<B>Late By: </B>" + result + " periods. You will be penalized 2.1% of remaining funds per period.";
   })
 
 }
@@ -97,6 +109,12 @@ function updateContractInfo(){
   totalifClaimedNowPromise.then(function(result){
     result = result/(10**8);
     document.getElementById("TotalifClaimedNow").innerHTML = "<B>Total amount that can be reclaimed right now by all collateral providers: </B>" + result.toLocaleString('en', { maximumFractionDigits: 8 })+ " UCASH";
+  })
+
+  numLoans = uCollateralContract.numLoans();
+  numLoans.then(function(result){
+    document.getElementById("numLoans").innerHTML = "<B>Total amount of loans active: </B>" + result;
+
   })
 
 
@@ -129,6 +147,14 @@ async function metamaskContribute(){
         alert("You have been sent UCASH! TESTUCASH contract address: 0xbD52C5265B94f727f0616f831b011c17e1f235A2")
     }).catch(function(err){
       alert("You can only get UCASH every 24 hours. TESTUCASH contract address: 0xbD52C5265B94f727f0616f831b011c17e1f235A2")
+    });
+  }
+  function dispenseETH(){
+    var dispensePromise = ucashFaucetContract.dispenseETH();
+    dispensePromise.then(function(result){
+        alert("You have been sent ETH!")
+    }).catch(function(err){
+      alert("You can only get ETH every 24 hours.")
     });
   }
 

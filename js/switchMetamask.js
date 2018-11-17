@@ -13,11 +13,14 @@ function switchProvider(accounts,web3provider){
 
     if(isMetaMask){
         if (isLoggedIn){
+          console.log("Metamask Logged In");
           metamaskLoggedIn(accounts);
         }  else {
+            console.log("Metamask Logged Out");
           metamaskLoggedOut(accounts);
         }
       } else {
+          console.log("No Metamask");
         noMetamask(accounts);
       }
 
@@ -56,6 +59,6 @@ function switchProvider(accounts,web3provider){
 
     //hide
     document.getElementById("metamaskLoggedIn").hidden = true;
-    document.getElementById("noMetaMask").hidden = true;
+    document.getElementById("noMetamask").hidden = true;
 
   }
