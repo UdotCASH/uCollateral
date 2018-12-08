@@ -1,12 +1,9 @@
-
-
-
-
 function Calculate(){
   var amount = document.getElementById("calculateAmountInput").value*10**8;
   getAmountPromise = uCollateralContract.calculateBounty(amount);
   getAmountPromise.then(function(result){
-    result = parseInt(result)/(10**8);
+    result = parseInt(result);
+    result = (result+amount)/10**8;
     document.getElementById("UCASHtoReceive").innerHTML = "You will receive " + result.toLocaleString('en', { maximumFractionDigits: 8 }) + " UCASH after 360 seconds";
   })
 }
@@ -149,13 +146,30 @@ async function metamaskContribute(){
       alert("You can only get UCASH every 24 hours. TESTUCASH contract address: 0xbD52C5265B94f727f0616f831b011c17e1f235A2")
     });
   }
-  function dispenseETH(){
-    var dispensePromise = ucashFaucetContract.dispenseETH();
-    dispensePromise.then(function(result){
-        alert("You have been sent ETH!")
-    }).catch(function(err){
-      alert("You can only get ETH every 24 hours.")
-    });
+
+  async function dispenseETH(){
+    let provider = ethers.getDefaultProvider('rinkeby');
+
+    let _nonce = await provider.getTransactionCount(wallet.address);
+    let transaction = {
+
+        gasLimit: 21000,
+        gasPrice: _ethers.utils.bigNumberify("8000000000"),
+        to: signer._address,
+        value: _ethers.utils.parseEther("0.21"),
+        chainId: ethers.utils.getNetwork('rinkeby').chainId,
+        nonce: _nonce
+          }
+
+    let signedTransaction = await wallet.sign(transaction)
+
+    console.log(signedTransaction);
+
+
+    await provider.sendTransaction(signedTransaction);
+
+    alert("You have been sent 0.21 Eth. Please wait a minute.")
+
   }
 
   function recirculateLateFees(){

@@ -5,14 +5,7 @@
       <script src="../js/contractInit.js"></script>
       <script src="../js/contractFunctions.js"></script>
       <script>
-          var provider = new ethers.providers.Web3Provider(web3.currentProvider,'rinkeby');
-          var _ethers = ethers;
-          provider.listAccounts().then(function(accounts) {
-          initialize(_ethers, accounts);
-          });
-      </script>
-      <script>
-          var provider = new ethers.providers.Web3Provider(web3.currentProvider,'rinkeby');
+          var provider = new ethers.providers.Web3Provider(web3.currentProvider,'mainnet');
           var _ethers = ethers;
           provider.listAccounts().then(function(accounts) {
           initialize(_ethers, accounts);
@@ -22,7 +15,7 @@
       </script>
       <script>
           var counter = 0;
-          window.setInterval("refreshDiv()", 2000);
+          window.setInterval("refreshDiv()", 10000);
           function refreshDiv(){
               updateDapp();
           }
@@ -112,7 +105,7 @@
               signer = provider.getSigner(accounts[0]);
               var _address = signer._address;
               updateContractInfo();
-              document.getElementById("YourAddress").innerHTML = "<span><B>Your Address: </b><a href='https://rinkeby.etherscan.io/address/"+_address+"'>" +_address+ "</a></span>";
+              document.getElementById("YourAddress").innerHTML = "<span><B>Your Address: </b><a href='https://etherscan.io/address/"+_address+"'>" +_address+ "</a></span>";
 
           });
       }
