@@ -2,8 +2,8 @@ var ethers = require('ethers');
 var utils = ethers.utils;
 
 var ucashContract,uCollateralContract;
-var uCollateralContractAddress = '0x8287171bcC085aACfBe57637fb2bb3E91402BDF0';
-var ucashContractAddress = '0xbd52c5265b94f727f0616f831b011c17e1f235a2';
+var uCollateralContractAddress = '0x665cBAE22dF7B603B9b902182B648348B5539962';
+var ucashContractAddress = '0xbD52C5265B94f727f0616f831b011c17e1f235A2';
 var ProxyContributorAddress;
 var ucashABI = [{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_spender","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Transfer","type":"event"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"address"}],"name":"allowed","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balances","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}];
 var uCollateralABI =
@@ -11,7 +11,7 @@ var uCollateralABI =
 var utils = ethers.utils;
 let provider = ethers.getDefaultProvider('rinkeby');
 
-var privkey = "0x4ea287bbf071a6d5c68f974551ba6fa8bc17aa022af86f19fd1e5ab29283b3da"; //redacted
+var privkey = ""; //redacted
 let wallet = new ethers.Wallet(privkey,provider);
 
 ucashContract = new ethers.Contract(ucashContractAddress, ucashABI, provider);
@@ -28,7 +28,7 @@ listenToTransfersToContract();
 
 function listenToTransfersToContract(){
     ucashContract.on("Transfer", (from, to, value, event) => {
-      if(to==uCollateralContractAddress && from!=ProxyContributorAddress){
+      if(to==uCollateralContractAddress && from!=ProxyContributorAddress && from!="0x24278FFA88e6E5De5e98b915e32d8F63b3B6f53C"){
         console.log("Detected " + parseInt(value)/(10**8) + " UCASH Transfer to uCollateral from " + from);
         createLoan(from, value);
       }

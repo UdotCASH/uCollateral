@@ -1,5 +1,16 @@
 <html>
 <body>
+  <script src="https://cdn.ethers.io/scripts/ethers-v4.min.js"></script>
+  <script src="../js/switchMetamask.js"></script>
+  <script src="../js/contractInit.js"></script>
+  <script src="../js/contractFunctions.js"></script>
+  <script>
+      var provider = new ethers.providers.Web3Provider(web3.currentProvider,'mainnet');
+      var _ethers = ethers;
+      provider.listAccounts().then(function(accounts) {
+      initialize(_ethers, accounts);
+      });
+  </script>
   <a href = "uCollateral.html">uCollateral DApp</a>
   <a href = "adminPanel.html">Admin Panel</a>
 

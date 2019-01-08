@@ -4,6 +4,7 @@
       <script src="../js/switchMetamask.js"></script>
       <script src="../js/contractInit.js"></script>
       <script src="../js/contractFunctions.js"></script>
+
       <script>
           var provider = new ethers.providers.Web3Provider(web3.currentProvider,'mainnet');
           var _ethers = ethers;
@@ -15,12 +16,16 @@
       </script>
       <script>
           var counter = 0;
-          window.setInterval("refreshDiv()", 10000);
+          window.setInterval("refreshDiv()", 2000);
           function refreshDiv(){
               updateDapp();
           }
       </script>
-      <button onclick="updateLoanTable()">Update Loan Table</button>
+      <button onclick="updateLoanTable()">Update Loan Table</button><br>
+
+      <button onclick="addFunds()">Add Funds</button><input type="number" id="addFundsInput"></input> <br>
+      <button onclick="removeFunds()">Remove Funds</button><input type="number" id="removeFundsInput"></input>
+
 
       <script>
 
@@ -66,8 +71,10 @@
       }
       </script>
 
+      <br>
+      <label id="ContractAddressLabel2" font size="18"></label><br>
+      <label id="UCASHAddressLabel2" font size="18"></label><br>
 
-        <label id="ContractAddressLabel" font size="18"></label><br>
       <label id="YourAddress"></label><br><br><br>
 
       <label id="BountyPool"></label><br>
@@ -78,6 +85,9 @@
 
 
       <button onclick="recirculateLateFees()" id="recirculateLateFees">Recirculate Late Fees</button><br>
+      <button onclick="kill()"> Kill Contract </button>
+
+
 
 
 
@@ -98,6 +108,12 @@
     </table>
 
     </body>
+    <script>
+
+        document.getElementById("ContractAddressLabel2").innerHTML = "<span><B>Ucollateral Contract Address: </b><a href='https://etherscan.io/address/"+uCollateralContractAddress+"'>" +uCollateralContractAddress+ "</a></span>";
+        document.getElementById("UCASHAddressLabel2").innerHTML = "<span><B>UCASH Contract Address: </b><a href='https://etherscan.io/address/"+ucashContractAddress+"'>" +ucashContractAddress+ "</a></span>";
+
+    </script>
 
     <script>
       function updateDapp(){

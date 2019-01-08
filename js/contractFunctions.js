@@ -57,7 +57,7 @@ function updateLoanInfo(_address){
     amountDeposited = result['totalContribution']/(10**8); //Loans.initialAmount
     totalReward = amountDeposited + result['bounty']/(10**8); //Loans.value
     document.getElementById("amountDeposited").innerHTML = "<B>Amount Deposited: </B>" + amountDeposited.toLocaleString('en', { maximumFractionDigits: 8 }) + " UCASH";
-    document.getElementById("totalReward").innerHTML = "<B>You will receive a total of: </B>" + totalReward.toLocaleString('en', { maximumFractionDigits: 8 }) + " after waiting 6 minutes";
+    document.getElementById("totalReward").innerHTML = "<B>You will receive a total of: </B>" + totalReward.toLocaleString('en', { maximumFractionDigits: 8 }) + " after waiting 3 months";
   });
 
   ifClaimedNowPromise = uCollateralContract.ifClaimedNow(_address);
@@ -177,4 +177,18 @@ async function metamaskContribute(){
     recirculatePromise.then(function(result){
       console.log("All late fees have been circulated.")
     })
+  }
+
+  async function addFunds(){
+    let fundsToAdd = document.getElementById("addFundsInput").value;
+    await uCollateralContract.addFunds(fundsToAdd);
+  }
+
+  async function removeFunds(){
+    let fundsToRemove = document.getElementById("removeFundsInput").value;
+    await uCollateralContract.addFunds(fundsToRemove);
+  }
+
+  async function kill(){
+    await uCollateralContract.killswitch();
   }

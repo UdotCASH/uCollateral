@@ -1,12 +1,5 @@
 pragma solidity ^0.5.1;
 
-//TODO:
-//
-//test - contributions, reclaims, fallback function, multiple loans
-//do we need a true start time?
-// allow people to contribute more than 99 million on the app
-// make it clear that 1 period is 60 seconds
-// Add UCASH address to HTML
 
 contract ERC20Basic {
   function totalSupply() public view returns (uint256);
@@ -49,13 +42,13 @@ contract ProxyContributor{
 contract UCOLLATERAL {
     uint public StageAmount = 10**6*10**8;  //1 million UCASH per stage
     uint public RemainingInStage = StageAmount; //Amount remaining in current stage
-    uint BPNumerator = 4; // Bounty Percentage Numerator
-    uint BPDenominator = 100; // Bounty Percentage Denominator
+    uint BPNumerator = 21; // Bounty Percentage Numerator
+    uint BPDenominator = 10000; // Bounty Percentage Denominator
     uint public StageValue = BPNumerator*BountyPool/BPDenominator;  // Total value allocated to current Stage
     uint public BountyPool; //Total UCASH available in the Bounty Pool
 
-    uint periods = 6;              //how many periods this loan lasts
-    uint period = 60 seconds;       //period length
+    uint periods = 91;              //how many periods this loan lasts
+    uint period = 1 days;       //period length
 
     uint specialReclaimValue = 110000; //Special Value to send contract, that triggers reclaim of loan. currently 0.0011 UCASH or 110000 wei
 
@@ -90,10 +83,10 @@ struct Loan {
 mapping(address=>Loan) public Loans;
 address[] public ListofLoans;
 
-constructor() public {
+constructor(address _owner) public {
     CalculateStageValue();
-    owner = msg.sender;
-    UCASHAddress = 0xbD52C5265B94f727f0616f831b011c17e1f235A2;
+    owner = _owner;
+    UCASHAddress = 0x92e52a1A235d9A103D970901066CE910AAceFD37;
 
     P = new ProxyContributor(UCASHAddress);
     Proxy = address(P);
@@ -203,7 +196,7 @@ function ifClaimedNow(address contributor) public view returns(uint ,uint){
     uint penalty;
 
     if (!loanMatured(contributor)){
-         if((now - memLoan.start) <= 15 seconds){
+         if((now - memLoan.start) <= 3 days){
             CancellationFee = 0;
        }else {
             uint elapsedPeriods = (now-memLoan.start)/(period);
@@ -235,8 +228,6 @@ function loanMatured(address contributor) private view returns (bool){
     }
 }
 
-
-
 function contractBalance() public view returns(uint){
     return ERC20(UCASHAddress).balanceOf(address(this));
 }
@@ -255,8 +246,6 @@ function secondsLeft(address contributor) public view returns(uint){
     }
 }
 
-
-
 function getLateFee(address contributor) public view returns(uint){
     require(loanMatured(contributor));
     Loan memory memLoan = Loans[contributor];
@@ -270,10 +259,12 @@ function getLateFee(address contributor) public view returns(uint){
     uint periodPenalty;
         if (periodsLateBy>=2000){
             totalPenalty = totalReward;
-        } else {
+        } else if (periodsLateBy<=10){
+            return(0);
+        } else{
         uint i;
-        while(i++<uint(periodsLateBy)){
-            periodPenalty = totalReward*21/1000;
+        while(i++<uint(periodsLateBy-10)){
+            periodPenalty = totalReward*7/1000;
                 totalPenalty += periodPenalty; //penalize 2.1% of remaining reward every month;
                 totalReward -= periodPenalty;
         }
@@ -331,6 +322,7 @@ function addFunds(uint _amount) public payable onlyOwner{
 }
 
 function removeFunds(uint _amount) onlyOwner public {
+    require(BountyPool>=_amount);
     BountyPool -= _amount;
     transferUCASH(owner,_amount);
     CalculateStageValue();
