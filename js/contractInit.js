@@ -3,7 +3,7 @@
 // 3 month contract : 0x2C013c072965DE3E54C91e8487ecea40A694bbf1
 
 var ucashContract,uCollateralContract,ucashFaucetContract,ProxyContributorContract;
-var uCollateralContractAddress = '0x665cBAE22dF7B603B9b902182B648348B5539962';
+var uCollateralContractAddress = '0x925B42517b001f9d73D5c6dF6085295b915b0874';
 var ucashContractAddress = '0xbD52C5265B94f727f0616f831b011c17e1f235A2';
 var ucashFaucetAddress = '0xf494f7e4f79e998421d7d76e303c577464a19d57';
 var ProxyContributorAddress;
